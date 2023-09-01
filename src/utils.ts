@@ -1,3 +1,5 @@
+import { ForecastItem, ForecastWeather } from "./types";
+
 export function convertUnixTimeStamp(timestamp: number) {
   const milliseconds = timestamp * 1000;
   const dateObj = new Date(milliseconds);
@@ -36,4 +38,37 @@ export function getNameOfDay() {
     weekday: "long",
   });
   return dateFormatter.format(new Date());
+}
+
+export function filterWeatherForDay(data: ForecastWeather, targetDay: number) {
+  return data.list.filter((item) => {
+    // Extract the date from the dt timestamp (in seconds)
+    const date = new Date(item.dt * 1000); // Convert to milliseconds
+    const day = date.getDate();
+
+    // Compare the day with the target day
+    return day === targetDay;
+  });
+}
+
+type forecast5days = Array<{ date: string; weatherData: ForecastItem[] }>;
+
+export function get5daysForecast(apiResponse: ForecastWeather): forecast5days {
+  const currentDate = new Date();
+  const weatherDataForNext5Days = [];
+
+  for (let i = 1; i <= 5; i++) {
+    const nextDay = new Date(currentDate);
+    nextDay.setDate(currentDate.getDate() + i);
+    const weatherForNextDay = filterWeatherForDay(
+      apiResponse,
+      nextDay.getDate()
+    );
+    weatherDataForNext5Days.push({
+      date: nextDay.toDateString(), // Date in a human-readable format
+      weatherData: weatherForNextDay,
+    });
+  }
+
+  return weatherDataForNext5Days;
 }
