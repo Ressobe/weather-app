@@ -51,13 +51,16 @@ export function filterWeatherForDay(data: ForecastWeather, targetDay: number) {
   });
 }
 
-type forecast5days = Array<{ date: string; weatherData: ForecastItem[] }>;
+type forecastDays = Array<{ date: string; weatherData: ForecastItem[] }>;
 
-export function get5daysForecast(apiResponse: ForecastWeather): forecast5days {
+export function getDaysForecast(
+  apiResponse: ForecastWeather,
+  numberOfDays: number
+): forecastDays {
   const currentDate = new Date();
   const weatherDataForNext5Days = [];
 
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= numberOfDays; i++) {
     const nextDay = new Date(currentDate);
     nextDay.setDate(currentDate.getDate() + i);
     const weatherForNextDay = filterWeatherForDay(

@@ -1,5 +1,5 @@
 import { useQueries, useQueryClient } from "@tanstack/react-query";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import {
   DEFAULT_CITY,
   getAirPollution,
@@ -8,11 +8,10 @@ import {
 } from "../api";
 import Loading from "./status/LoadingPage";
 import ErrorPage from "./status/ErrorPage";
-import SearchBar from "./search/SearchBar";
+// import SearchBar from "./search/SearchBar";
 import Weather from "./weather/Weather";
 import TodayHighlights from "./weather/TodayHighlights";
 import Forecast from "./weather/Forecast";
-import Today from "./weather/Today";
 
 function checkCity() {
   const city = localStorage.getItem("city");
@@ -24,9 +23,8 @@ function checkCity() {
 
 function App() {
   const queryClient = useQueryClient();
-
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [city, setCity] = useState(() => checkCity());
+  const [city, setCity] = useState(checkCity());
   const [units, setUnits] = useState("metric");
 
   const weather = useQueries({
@@ -75,8 +73,8 @@ function App() {
 
   return (
     <main className="">
-      <div className="flex justify-between items-center pt-6 px-4 mx-24">
-        <button className="bg-primary px-6 py-2 rounded-lg text-xl font-bold">
+      <div className="flex justify-between items-center pt-6 px-4 mx-12">
+        <button className="bg-primary px-6 py-2 rounded-lg text-lg inline-flex justify-center items-center font-bold">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             height="2em"
@@ -87,7 +85,9 @@ function App() {
           </svg>
           Current Location
         </button>
-        <SearchBar handleRefetch={handleRefetch} inputRef={inputRef} />
+
+        {/*<SearchBar handleRefetch={handleRefetch} inputRef={inputRef} /> */}
+
         <div className="text-primary font-bold text-4xl flex justify-center items-center">
           <img src="/icon.svg" className="inline-block mr-5" width="60px" />
           <span className="text-on_surface">WeatherXXX</span>
@@ -95,7 +95,7 @@ function App() {
       </div>
 
       <section className="my-20 gap-10 flex flex-col 2xl:flex-row justify-center  ">
-        <div className="flex flex-col md:flex-row justify-center gap-10">
+        <div className="flex flex-col lg:flex-row justify-center gap-10">
           <Weather className="" currentWeather={weather[0].data} />
           <Forecast className="" forecastWeather={weather[1].data} />
         </div>
