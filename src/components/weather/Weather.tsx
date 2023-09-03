@@ -14,17 +14,16 @@ export default function Weather({ currentWeather, className }: WeatherProps) {
     >
       <section className="bg-on_background mr-10  rounded-3xl h-full p-16 ">
         <h1 className="font-bold text-6xl mt-4">Now</h1>
-        <svg
-          className="w-64 my-6"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          id="cloud"
-        >
-          <path d="M18.42,9.21a7,7,0,0,0-13.36,1.9A4,4,0,0,0,6,19H17a5,5,0,0,0,1.42-9.79ZM17,17H6a2,2,0,0,1,0-4,1,1,0,0,0,1-1,5,5,0,0,1,9.73-1.61,1,1,0,0,0,.78.66A3,3,0,0,1,17,17Z"></path>
-        </svg>
-        <h1 className="font-bold text-8xl">
-          {Math.round(currentWeather.main.temp)} &#176;
-        </h1>
+        <div className="flex my-10">
+          <h1 className="font-bold text-6xl">
+            {Math.round(currentWeather.main.temp)} &#176;
+          </h1>
+          <img
+            src={`/icons/${currentWeather.weather[0].icon}.png`}
+            className="inline-block"
+            width="60px"
+          />
+        </div>
         <p className="my-4 flex flex-row justify-start items-center gap-2">
           <span>{capitalize(currentWeather.weather[0].description)}</span>
         </p>
