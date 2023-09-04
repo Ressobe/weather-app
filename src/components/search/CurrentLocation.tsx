@@ -1,4 +1,5 @@
 import { FormEvent } from "react";
+import { getCords, getCords2, getCurrentWeather2 } from "../../api";
 
 type CurrentLocationProps = {
   handleRefetch: (e: FormEvent) => void;
@@ -7,13 +8,39 @@ type CurrentLocationProps = {
 export default function CurrentLocation({
   handleRefetch,
 }: CurrentLocationProps) {
+
+  const options = {
+    enableHighAccuracy: true,
+    timeout: 5000,
+    maximumAge: 0,
+  };
+  
+  async function success(pos) {
+    const crd = pos.coords;
+  
+    console.log("Your current position is:");
+    console.log(`Latitude : ${crd.latitude}`);
+    console.log(`Longitude: ${crd.longitude}`);
+    console.log(`More or less ${crd.accuracy} meters.`);
+
+    // console.log(await getCurrentWeather2(crd.latitude, crd.longitude))
+  }
+  
+  function error(err) {
+    console.warn(`ERROR(${err.code}): ${err.message}`);
+  }
+
+  const handleClick = () => {
+
+   console.log( getCords2("Warszawa"));
+    // navigator.geolocation.getCurrentPosition(success, error, options);
+  }
+
   return (
-    <form>
-      <button className='bg-primary px-6 py-2 rounded-lg text-lg inline-flex justify-center items-center font-bold'>
+      <button onClick={handleClick} className='bg-primary px-6 py-2 rounded-lg text-lg inline-flex justify-center items-center font-bold'>
         <Icon />
         Current Location
       </button>
-    </form>
   );
 }
 

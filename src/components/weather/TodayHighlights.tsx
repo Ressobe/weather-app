@@ -1,8 +1,8 @@
+import { useMemo } from "react";
 import { AirPollution, CurrentWeather } from "../../types";
 import { convertUnixTimeStamp } from "../../utils";
 
 const pollutionScale = ["Good", "Fair", "Moderate", "Poor", "Very Poor"];
-const humidityScale = ["High", "Average", "Low"];
 
 type TodayHighlightsProps = {
   currentWeather: CurrentWeather | undefined;
@@ -15,16 +15,32 @@ export default function TodayHighlights({
   airPollution,
   className,
 }: TodayHighlightsProps) {
+
+  const humidityScale = useMemo(() => {
+      const humidity = currentWeather!.main.humidity;
+      if (humidity > 70) return "High";
+      if (humidity <= 70 && humidity >= 40) return "Average";
+      return "Low";
+
+  }, [currentWeather])
+
+  const visibilityScale = useMemo(() => {
+      const visibility = Math.round(currentWeather!.visibility / 1000);
+      if (visibility > 7) return "Good";
+      if (visibility <= 7 && visibility >= 4) return "Average";
+      return "Bad";
+  }, [currentWeather])
+
+
   if (!currentWeather || !airPollution) return;
 
   return (
     <section
-      className={`${className} bg-on_background p-12 rounded-3xl block text-on_surface`}
+      className={`${className}   bg-on_background rounded-3xl p-20 block text-on_surface`}
     >
-      <div className="p-6">
         <h1 className="font-bold text-4xl">Today's Highlights</h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 2xl:grid-rows-2 gap-5 mt-6   ">
+        <div className="grid grid-cols-1 lg:grid-cols-3 2xl:grid-rows-2 gap-5 mt-24">
           <div className="p-4 rounded-lg bg-background flex flex-col justify-between items-center">
             <p className=" text-xl ">Pressure</p>
             <p className="inline-flex h-full w-full justify-center items-center">
@@ -91,7 +107,6 @@ export default function TodayHighlights({
 
           <div className="p-4 rounded-lg bg-background flex flex-col justify-between items-center">
             <span className=" text-xl self-start">Humidity</span>
-
             <span className="font-bold text-4xl flex justify-center items-center gap-5">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -104,7 +119,7 @@ export default function TodayHighlights({
               </svg>
               {currentWeather.main.humidity} %
             </span>
-            <span className="text-2xl">Normal</span>
+            <span className="text-2xl">{humidityScale}</span>
           </div>
           <div className="p-4 rounded-lg bg-background flex flex-col justify-between items-center">
             <span className=" text-xl self-start">Visibility</span>
@@ -119,7 +134,7 @@ export default function TodayHighlights({
               </svg>
               {Math.round(currentWeather.visibility / 1000)} km
             </span>
-            <span className="text-2xl">Good</span>
+            <span className="text-2xl">{visibilityScale}</span>
           </div>
           <div className="p-4 rounded-lg bg-background flex flex-col justify-between items-center">
             <p className=" text-xl self-start">Air quality</p>
@@ -138,8 +153,7 @@ export default function TodayHighlights({
               {pollutionScale[airPollution.list[0].main.aqi - 1]}
             </p>
           </div>
-        </div>
-      </div>
+      </div>  
     </section>
   );
 }

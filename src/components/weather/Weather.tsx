@@ -10,9 +10,9 @@ export default function Weather({ currentWeather, className }: WeatherProps) {
 
   return (
     <div
-      className={`${className} flex justify-center items-center h-full text-on_surface`}
+      className={`${className}    p-10 flex justify-center items-center  text-on_surface`}
     >
-      <section className="bg-on_background mr-10 text-3xl rounded-3xl h-full px-12 py-10 ">
+      <section className="text-3xl p-20 bg-on_background rounded-3xl">
         <h1 className="font-bold text-6xl mt-4">Now</h1>
         <div className="flex my-10">
           <h1 className="font-bold text-6xl">
@@ -21,7 +21,7 @@ export default function Weather({ currentWeather, className }: WeatherProps) {
           <img
             src={`/icons/${currentWeather.weather[0].icon}.png`}
             className="inline-block mx-4"
-            width="60px"
+            width="50px"
           />
         </div>
         <p className="my-4 flex flex-row justify-start items-center gap-2">
