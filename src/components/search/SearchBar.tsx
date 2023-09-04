@@ -1,4 +1,6 @@
-import { FormEvent, MutableRefObject } from "react";
+import { FormEvent, MutableRefObject, useCallback, useState } from "react";
+import { getCords2 } from "../../api";
+import { GeoApiResponse } from "../../types";
 
 type SearchBarProps = {
   handleRefetch: (e: FormEvent) => void;
@@ -6,29 +8,60 @@ type SearchBarProps = {
 };
 
 export default function SearchBar({ handleRefetch, inputRef }: SearchBarProps) {
+  const [prompt, setPrompt] = useState<GeoApiResponse[] | null>();
+
+  const hadnleChange = useCallback(()=> {
+    if(inputRef.current) {
+      const value = inputRef.current.value;
+      setPrompt(null);
+      if (!value) return;
+
+      const fetchData = async () => {
+          setPrompt(await getCords2(value));
+      }
+      fetchData();
+    }
+  }, [inputRef])
+
   return (
       <form
         onSubmit={handleRefetch}
-        className='w-1/3 bg-on_background text-on_surface font-bold text-xl rounded-lg'
+        className='w-1/3 relative bg-on_background text-on_surface font-bold text-xl rounded-lg'
       >
-        <div className='relative w-full py-2 '>
-          <Icon />
+        <div className='relative w-full py-2'>
+          <Icon width="2em" />
           <input
             type='search'
             ref={inputRef}
+            onChange={hadnleChange}
             placeholder='Search city ... '
             className=' inline-block outline-none p-2  bg-on_background rounded-lg'
           />
         </div>
+          {
+            prompt && prompt.length > 0  ? (
+            <div className="absolute bg-on_background drop-shadow-xl w-full mt-1 rounded-lg px-2 py-6">
+                {prompt.map((item, idx) => {
+                  return (
+                    <div className="flex items-center" key={idx}>
+                      <Icon width="1em" />
+                      <span>{item.name}, {item.country}</span>
+                    </div>
+                  );
+                })}
+            </div>
+            ) : null
+          }
+
       </form>
   );
 }
 
-function Icon() {
+function Icon({width}: {width: string}) {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'
-      width='2em'
+      width={`${width}`}
       className='mx-2 inline-block fill-on_surface'
       fillRule='evenodd'
       strokeLinejoin='round'
