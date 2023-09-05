@@ -35,7 +35,7 @@ export default function CurrentLocation({ mobileView, setLocation }: CurrentLoca
   }
 
   return (
-      <button onClick={handleClick} className='bg-primary px-6 py-2 rounded-lg text-lg inline-flex justify-center items-center font-bold'>
+      <button onClick={handleClick} className='bg-primary h-full px-6 py-2 rounded-lg text-lg inline-flex justify-center items-center font-bold'>
         <LocationIcon 
           width="2em"
           className={`${mobileView ? "" : "mr-2"} fill-on_primary inline-block `}

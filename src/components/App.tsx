@@ -57,34 +57,31 @@ function App() {
   if (isLoading) return <Loading />;
   if (isError) return <ErrorPage />;
 
-
   return (
-    <main className="">
-      <div className="flex flex-wrap gap-5 justify-between items-center pt-6 px-4 mx-12">
-        {windowSize.innerWidth > 1400 ? (
-          <>
-            <CurrentLocation mobileView={false} setLocation={setCity} /> 
-            <SearchBar  mobileView={false} onSearch={setCity}/>
-            <Logo mobileView={false} />
-          </>
-        ) : (
-          <>
-            <CurrentLocation mobileView={true} setLocation={setCity} /> 
-            <SearchBar mobileView={true} onSearch={setCity}/>
-            <Logo mobileView={true} />
-          </>
-        )
-        }
-      </div>
-
-      <section className="my-20 mx-10 gap-10 flex flex-col 2xl:flex-row justify-center  ">
-        <div className="flex flex-col lg:flex-row justify-center">
-          <Weather className="" currentWeather={weather[0].data} />
-          <Forecast className="" forecastWeather={weather[1].data} />
+    <main className=''>
+      {windowSize.innerWidth > 1400 ? (
+        <div className='flex flex-wrap gap-5 justify-between items-center pt-6 px-4 mx-12'>
+          <CurrentLocation mobileView={false} setLocation={setCity} />
+          <SearchBar mobileView={false} onSearch={setCity} />
+          <Logo mobileView={false} />
         </div>
-        <div className="flex justify-center">
+      ) : (
+        <div className="flex flex-wrap gap-10 justify-between items-center pt-6 px-4 mx-12">
+          <SearchBar mobileView={true} onSearch={setCity} />
+          <div className="flex gap-10 items-center justify-center">
+          <CurrentLocation mobileView={true} setLocation={setCity} />
+          <Logo mobileView={true} />
+          </div>
+        </div>
+      )}
+      <section className='my-20 mx-10 gap-10 flex flex-col 2xl:flex-row justify-center'>
+        <div className='flex flex-col lg:flex-row justify-center'>
+          <Weather className='' currentWeather={weather[0].data} />
+          <Forecast className='' forecastWeather={weather[1].data} />
+        </div>
+        <div className='flex justify-center'>
           <TodayHighlights
-            className=""
+            className=''
             currentWeather={weather[0].data}
             airPollution={weather[2].data}
           />
