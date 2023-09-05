@@ -50,7 +50,7 @@ export async function getCords(city: string) {
   return [cords[0]["lat"], cords[0]["lon"]];
 }
 
-export async function getCords2(city: string) {
+export async function getCities(city: string) {
   const url = `${GEO}/direct?q=${city}&limit=5&appid=${OPEN_WEATHER_API_KEY}`;
   const cords = await callApi(url);
   return cords as GeoApiResponse[];
@@ -68,10 +68,4 @@ export async function getAirPollution(city: string, units: string) {
   const url = `${OPEN_WEATHER_API}/air_pollution?lat=${lat}&lon=${lon}&appid=${OPEN_WEATHER_API_KEY}&units=${units}&lang=pl`;
   const response = await callApi(url);
   return response as AirPollution;
-}
-
-export async function getCities(inputValue: string) {
-  const url = `${GEO_API_URL}/cities?minPopulation=1000000&namePrefix=${inputValue}`;
-  const response = await callApi(url, geoApiOptions);
-  return response;
 }

@@ -1,5 +1,5 @@
 import { useQueries, useQueryClient } from "@tanstack/react-query";
-import { FormEvent, useRef, useState } from "react";
+import { useState } from "react";
 import {
   DEFAULT_CITY,
   getAirPollution,
@@ -14,6 +14,7 @@ import Forecast from "./weather/Forecast";
 import SearchBar from "./search/SearchBar";
 import CurrentLocation from "./search/CurrentLocation";
 import Logo from "./search/Logo";
+import useWindow from "../hooks/useWindow";
 
 function checkCity() {
   const city = localStorage.getItem("city");
@@ -25,9 +26,10 @@ function checkCity() {
 
 function App() {
   const queryClient = useQueryClient();
-  const inputRef = useRef<HTMLInputElement | null>(null);
+
   const [city, setCity] = useState(checkCity());
   const [units, setUnits] = useState("metric");
+  const windowSize = useWindow();
 
   const weather = useQueries({
     queries: [
@@ -46,24 +48,6 @@ function App() {
     ],
   });
 
-  const handleRefetch = (e: FormEvent) => {
-    e.preventDefault();
-    if (!inputRef.current) return;
-
-    const newCity = inputRef.current.value;
-
-    if (newCity === "") return;
-
-    setCity(newCity);
-    localStorage.setItem("city", newCity);
-
-    queryClient.refetchQueries([
-      "currentWeather",
-      "forecastWeather",
-      "airPollution",
-    ]);
-  };
-
   const isLoading =
     weather[0].isLoading || weather[1].isLoading || weather[2].isLoading;
 
@@ -76,10 +60,21 @@ function App() {
 
   return (
     <main className="">
-      <div className="flex justify-between items-center pt-6 px-4 mx-12">
-        <CurrentLocation handleRefetch={handleRefetch} /> 
-        <SearchBar handleRefetch={handleRefetch} inputRef={inputRef} />
-        <Logo />
+      <div className="flex flex-wrap gap-5 justify-between items-center pt-6 px-4 mx-12">
+        {windowSize.innerWidth > 1400 ? (
+          <>
+            <CurrentLocation mobileView={false} setLocation={setCity} /> 
+            <SearchBar  mobileView={false} onSearch={setCity}/>
+            <Logo mobileView={false} />
+          </>
+        ) : (
+          <>
+            <CurrentLocation mobileView={true} setLocation={setCity} /> 
+            <SearchBar mobileView={true} onSearch={setCity}/>
+            <Logo mobileView={true} />
+          </>
+        )
+        }
       </div>
 
       <section className="my-20 mx-10 gap-10 flex flex-col 2xl:flex-row justify-center  ">
