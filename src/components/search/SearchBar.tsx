@@ -1,66 +1,168 @@
-import { FormEvent, MutableRefObject, useCallback, useState } from "react";
-import { getCords2 } from "../../api";
+import { FormEvent, useEffect, useState } from "react";
+import { getCities } from "../../api";
 import { GeoApiResponse } from "../../types";
 
 type SearchBarProps = {
-  handleRefetch: (e: FormEvent) => void;
-  inputRef: MutableRefObject<HTMLInputElement | null>;
+  onSearch: (city: string) => void;
+  mobileView: boolean;
 };
 
-export default function SearchBar({ handleRefetch, inputRef }: SearchBarProps) {
-  const [prompt, setPrompt] = useState<GeoApiResponse[] | null>();
+export default function SearchBar({ onSearch, mobileView}: SearchBarProps) {
+  const [inputValue, setInputValue] = useState("");
+  const [prompt, setPrompt] = useState<GeoApiResponse[] | null>(null);
 
-  const hadnleChange = useCallback(() => {
-    if (inputRef.current) {
-      const value = inputRef.current.value;
+  const checkInputValue = (city: string) => {
+    if (city.length === 0) return false;
+    return true;
+  };
+
+  useEffect(() => {
+    if (!checkInputValue(inputValue)) {
       setPrompt(null);
-      if (!value) return;
-
+    } else {
       const fetchData = async () => {
-        setPrompt(await getCords2(value));
+        setPrompt(await getCities(inputValue));
       };
       fetchData();
     }
-  }, [inputRef]);
+  }, [inputValue]);
 
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!checkInputValue(inputValue)) return;
+    onSearch(inputValue);
+    setInputValue("");
+  };
+
+  const [expanded, setExpanded] = useState(false);
 
   return (
-    <form
-      onSubmit={handleRefetch}
-      className='w-1/3 relative bg-on_background text-on_surface font-bold text-xl rounded-lg'
-    >
-      <div className='relative w-full py-2'>
-        <SearchIcon width='2em' />
-        <input
-          type='search'
-          onChange={hadnleChange}
-          placeholder='Search city ... '
-          className=' inline-block outline-none p-2  bg-on_background rounded-lg'
-        />
-        {/* {inputRef.current.value.length > 0 ? (
-          <button onClick={handleClick}>
-            <ClearIcon
-              width='1em'
-              className='absolute right-0 top-1/3 mr-4 active:opacity-80 inline-block fill-on_surface'
+    <>
+      {mobileView ? (
+        <form
+          onSubmit={handleSubmit}
+          className='relative w-auto bg-on_background text-on_surface font-bold text-xl rounded-lg'
+        >
+          {expanded ? (
+            <div className='w-full py-2'>
+              <button type="button" onClick={() => setExpanded(false)}>
+                <ArrowLeftIcon
+                  width='2em'
+                  className='inline-block fill-on_surface hover:opacity-80'
+                />
+              </button>
+              <input
+                type='search'
+                onChange={(e) => setInputValue(e.target.value)}
+                value={inputValue}
+                placeholder='Search city ... '
+                className=' inline-block outline-none p-2  bg-on_background rounded-lg'
+              />
+              <Clear
+                enable={inputValue.length > 0 ? true : false}
+                clearFunction={setInputValue}
+              />
+              <Prompt prompt={prompt} />
+            </div>
+          ) : (
+            <div className='py-2 px-1'>
+              <button type="button" onClick={() => setExpanded(true)}>
+                <SearchIcon
+                  width='2em'
+                  className='mx-2 inline-block fill-on_surface hover:opacity-80 active:opacity-70'
+                />
+              </button>
+            </div>
+          )}
+        </form>
+      ) : (
+        <form
+          onSubmit={handleSubmit}
+          className='w-1/3 relative bg-on_background text-on_surface font-bold text-xl rounded-lg'
+        >
+          <div className='relative w-full py-2'>
+            <SearchIcon
+              width='2em'
+              className='mx-2 inline-block fill-on_surface'
             />
-          </button>
-        ) : null} */}
-      </div>
-      {prompt && prompt.length > 0 ? (
-        <div className='absolute bg-on_background drop-shadow-xl w-full mt-1 rounded-lg px-2 py-6'>
-          {prompt.map((item, idx) => {
-            return (
-              <div className='flex items-center' key={idx}>
-                <SearchIcon width='1em' />
-                <span>
-                  {item.name}, {item.country}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      ) : null}
-    </form>
+            <input
+              type='search'
+              onChange={(e) => setInputValue(e.target.value)}
+              value={inputValue}
+              placeholder='Search city ... '
+              className=' inline-block outline-none p-2  bg-on_background rounded-lg'
+            />
+            <Clear
+              enable={inputValue.length > 0 ? true : false}
+              clearFunction={setInputValue}
+            />
+            <Prompt prompt={prompt} />
+          </div>
+        </form>
+      )}
+    </>
+  );
+}
+
+function ArrowLeftIcon({
+  width,
+  className,
+}: {
+  width: string;
+  className: string;
+}) {
+  return (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      width={`${width}`}
+      className={`${className}`}
+      viewBox='0 0 24 24'
+      id='left-arrow'
+    >
+      <path d='M11,17a1,1,0,0,1-.71-.29l-4-4a1,1,0,0,1,0-1.41l4-4a1,1,0,0,1,1.41,1.41L8.41,12l3.29,3.29A1,1,0,0,1,11,17Z'></path>
+      <path d='M17,13H7a1,1,0,0,1,0-2H17a1,1,0,0,1,0,2Z'></path>
+    </svg>
+  );
+}
+
+function Clear({
+  enable,
+  clearFunction,
+}: {
+  enable: boolean;
+  clearFunction: (text: string) => void;
+}) {
+  if (!enable) return;
+  return (
+    <button onClick={() => clearFunction("")} type='button'>
+      <ClearIcon
+        width='1em'
+        className='absolute right-0 top-1/3 mr-4 active:opacity-80 inline-block fill-on_surface'
+      />
+    </button>
+  );
+}
+
+function Prompt({ prompt }: { prompt: GeoApiResponse[] | null }) {
+  if (!prompt) return;
+  if (prompt.length === 0) return;
+  console.log(prompt);
+  return (
+    <div className='absolute bg-on_background drop-shadow-xl w-full mt-3 rounded-lg px-2 py-6'>
+      {prompt.map((item, idx) => {
+        return (
+          <div className='flex items-center' key={idx}>
+            <SearchIcon
+              width='1em'
+              className='mx-2 inline-block fill-on_surface'
+            />
+            <span>
+              {item.name}, {item.country}
+            </span>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
@@ -77,12 +179,18 @@ function ClearIcon({ width, className }: { width: string; className: string }) {
   );
 }
 
-function SearchIcon({ width }: { width: string }) {
+function SearchIcon({
+  width,
+  className,
+}: {
+  width: string;
+  className: string;
+}) {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'
       width={`${width}`}
-      className='mx-2 inline-block fill-on_surface'
+      className={`${className}`}
       fillRule='evenodd'
       strokeLinejoin='round'
       strokeMiterlimit='2'
