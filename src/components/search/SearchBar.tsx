@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { getCities } from "../../api";
 import { GeoApiResponse } from "../../types";
 import ArrowLeftIcon from "./ArrowLeftIcon";
@@ -7,18 +7,30 @@ import ClearIcon from "./ClearIcon";
 import Prompt from "./Prompt";
 
 type SearchBarProps = {
+  defaultCity: string;
   onSearch: (city: string) => void;
   mobileView: boolean;
 };
 
-export default function SearchBar({ onSearch, mobileView }: SearchBarProps) {
-  const [inputValue, setInputValue] = useState("");
-  const [prompt, setPrompt] = useState<GeoApiResponse[] | null>(null);
+function hasNumbers(inputString: string) {
+  return inputString.split('').some(character => '0123456789'.includes(character));
+}
 
-  const checkInputValue = (city: string) => {
+export default function SearchBar({
+  defaultCity,
+  onSearch,
+  mobileView,
+}: SearchBarProps) {
+  const [inputValue, setInputValue] = useState(defaultCity);
+  const [prompt, setPrompt] = useState<GeoApiResponse[] | null>(null);
+  const [enable, setEnable] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+
+  const checkInputValue = useCallback((city: string) => {
     if (city.length === 0) return false;
+    if (hasNumbers(city)) return false;
     return true;
-  };
+  }, []);
 
   useEffect(() => {
     if (!checkInputValue(inputValue)) {
@@ -29,16 +41,21 @@ export default function SearchBar({ onSearch, mobileView }: SearchBarProps) {
       };
       fetchData();
     }
-  }, [inputValue]);
+  }, [inputValue, checkInputValue]);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleChange = useCallback((text: string) => {
+    setInputValue(text);
+    setEnable(true);
+    localStorage.setItem("city", text);
+  }, [])
+
+
+  const handleSubmit = useCallback((e: FormEvent) => {
     e.preventDefault();
     if (!checkInputValue(inputValue)) return;
     onSearch(inputValue);
     setInputValue("");
-  };
-
-  const [expanded, setExpanded] = useState(false);
+  }, [checkInputValue, inputValue, onSearch]);
 
   return (
     <>
@@ -58,7 +75,7 @@ export default function SearchBar({ onSearch, mobileView }: SearchBarProps) {
                 </button>
                 <input
                   type='search'
-                  onChange={(e) => setInputValue(e.target.value)}
+                  onChange={(e) => handleChange(e.target.value)}
                   value={inputValue}
                   placeholder='Search city ... '
                   className=' inline-block outline-none p-2  bg-on_background rounded-lg'
@@ -67,7 +84,7 @@ export default function SearchBar({ onSearch, mobileView }: SearchBarProps) {
                   enable={inputValue.length > 0 ? true : false}
                   clearFunction={setInputValue}
                 />
-                <Prompt prompt={prompt} />
+                { enable && <Prompt handleClick={onSearch} prompt={prompt} />}
               </div>
             </form>
           ) : (
@@ -93,7 +110,7 @@ export default function SearchBar({ onSearch, mobileView }: SearchBarProps) {
             />
             <input
               type='search'
-              onChange={(e) => setInputValue(e.target.value)}
+              onChange={(e) => handleChange(e.target.value)}
               value={inputValue}
               placeholder='Search city ... '
               className=' inline-block outline-none p-2  bg-on_background rounded-lg'
@@ -102,7 +119,7 @@ export default function SearchBar({ onSearch, mobileView }: SearchBarProps) {
               enable={inputValue.length > 0 ? true : false}
               clearFunction={setInputValue}
             />
-            <Prompt prompt={prompt} />
+            {enable && <Prompt handleClick={onSearch} prompt={prompt} />}
           </div>
         </form>
       )}
