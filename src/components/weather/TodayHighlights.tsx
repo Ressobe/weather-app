@@ -13,7 +13,6 @@ type TodayHighlightsProps = {
 export default function TodayHighlights({
   currentWeather,
   airPollution,
-  className,
 }: TodayHighlightsProps) {
 
   const humidityScale = useMemo(() => {
@@ -36,7 +35,7 @@ export default function TodayHighlights({
 
   return (
     <section
-      className={`${className}   bg-on_background rounded-3xl p-20 block text-on_surface`}
+      className="bg-on_background rounded-3xl p-20 block text-on_surface"
     >
         <h1 className="font-bold text-4xl">Today's Highlights</h1>
 
