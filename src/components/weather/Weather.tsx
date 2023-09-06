@@ -3,17 +3,14 @@ import { capitalize, getNameOfDay, getTime } from "../../utils";
 
 type WeatherProps = {
   currentWeather: CurrentWeather | undefined;
-  className?: string;
+  city: string;
 };
-export default function Weather({ currentWeather, className }: WeatherProps) {
+export default function Weather({ currentWeather,  city }: WeatherProps) {
   if (!currentWeather) return;
 
   return (
-    <div
-      className={`${className}    p-10 flex justify-center items-center  text-on_surface`}
-    >
-      <section className="text-3xl p-20 bg-on_background rounded-3xl">
-        <h1 className="font-bold text-6xl mt-4">Now</h1>
+      <section className="text-3xl text-on_surface">
+        <h1 className="font-bold text-6xl">Now</h1>
         <div className="flex my-10">
           <h1 className="font-bold text-6xl">
             {Math.round(currentWeather.main.temp)} &#176;
@@ -21,7 +18,7 @@ export default function Weather({ currentWeather, className }: WeatherProps) {
           <img
             src={`/icons/${currentWeather.weather[0].icon}.png`}
             className="inline-block mx-4"
-            width="50px"
+            width="60px"
           />
         </div>
         <p className="my-4 flex flex-row justify-start items-center gap-2">
@@ -40,11 +37,10 @@ export default function Weather({ currentWeather, className }: WeatherProps) {
             >
               <path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z" />
             </svg>
-            {currentWeather.name}
+            {city}
           </span>
         </div>
       </section>
-    </div>
   );
 }
 

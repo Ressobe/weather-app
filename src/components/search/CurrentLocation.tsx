@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { getCurrentWeather2  } from "../../api";
 
 type CurrentLocationProps = {
@@ -5,37 +6,35 @@ type CurrentLocationProps = {
  setLocation: (city: string) => void;
 };
 
+const options = {
+  enableHighAccuracy: true,
+  timeout: 5000,
+  maximumAge: 0,
+};
+
+function error(err: GeolocationPositionError) {
+  console.log(err);
+  console.warn(`ERROR(${err.code}): ${err.message}`);
+}
+
 export default function CurrentLocation({ mobileView, setLocation }: CurrentLocationProps) {
-
-  const options = {
-    enableHighAccuracy: true,
-    timeout: 5000,
-    maximumAge: 0,
-  };
   
-  const success = async (pos) => {
-    console.log(pos);
-    const crd = pos.coords;
-    console.log("Your current position is:");
-    console.log(`Latitude : ${crd.latitude}`);
-    console.log(`Longitude: ${crd.longitude}`);
-    console.log(`More or less ${crd.accuracy} meters.`);
-
-    const data = await getCurrentWeather2(crd.latitude, crd.longitude);
-    setLocation(data.name);
-  }
+  const success = useCallback(({coords: {latitude, longitude}}: GeolocationPosition) => {
+    const getData = async() => {
+      const data = await getCurrentWeather2(`${latitude}`, `${longitude}`);
+      setLocation(data.name);
+      localStorage.setItem("city", data.name);
+    };
+    getData();
+  }, [setLocation]);
   
-  function error(err) {
-    console.log(err);
-    console.warn(`ERROR(${err.code}): ${err.message}`);
-  }
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     navigator.geolocation.getCurrentPosition(success, error, options);
-  }
+  }, [success]);
 
   return (
-      <button onClick={handleClick} className='bg-primary px-6 py-2 rounded-lg text-lg inline-flex justify-center items-center font-bold'>
+      <button onClick={handleClick} className='bg-primary h-full px-6 py-2 rounded-lg text-lg inline-flex justify-center items-center font-bold'>
         <LocationIcon 
           width="2em"
           className={`${mobileView ? "" : "mr-2"} fill-on_primary inline-block `}

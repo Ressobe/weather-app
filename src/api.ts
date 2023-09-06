@@ -27,19 +27,21 @@ async function callApi(url: string, options?: object) {
 
 export async function getCurrentWeather(
   city: string,
-  units: string
+  units = "metric",
+  lang = "en"
 ): Promise<CurrentWeather> {
   const [lat, lon] = await getCords(city);
-  const url = `${OPEN_WEATHER_API}/weather?lat=${lat}&lon=${lon}&appid=${OPEN_WEATHER_API_KEY}&units=${units}&lang=pl`;
+  const url = `${OPEN_WEATHER_API}/weather?lat=${lat}&lon=${lon}&appid=${OPEN_WEATHER_API_KEY}&units=${units}&lang=${lang}`;
   const response = await callApi(url);
   return response as CurrentWeather;
 }
 export async function getCurrentWeather2(
   lat: string,
   lon: string,
-  units = "metric"
+  units = "metric",
+  lang = "en"
 ): Promise<CurrentWeather> {
-  const url = `${OPEN_WEATHER_API}/weather?lat=${lat}&lon=${lon}&appid=${OPEN_WEATHER_API_KEY}&units=${units}&lang=pl`;
+  const url = `${OPEN_WEATHER_API}/weather?lat=${lat}&lon=${lon}&appid=${OPEN_WEATHER_API_KEY}&units=${units}&lang=${lang}`;
   const response = await callApi(url);
   return response as CurrentWeather;
 }
@@ -56,14 +58,14 @@ export async function getCities(city: string) {
   return cords as GeoApiResponse[];
 }
 
-export async function getForecastWeather(city: string, units: string) {
+export async function getForecastWeather(city: string, units = "metric") {
   const [lat, lon] = await getCords(city);
   const url = `${OPEN_WEATHER_API}/forecast?lat=${lat}&lon=${lon}&appid=${OPEN_WEATHER_API_KEY}&units=${units}&lang=pl`;
   const response = await callApi(url);
   return response as ForecastWeather;
 }
 
-export async function getAirPollution(city: string, units: string) {
+export async function getAirPollution(city: string, units = "metric") {
   const [lat, lon] = await getCords(city);
   const url = `${OPEN_WEATHER_API}/air_pollution?lat=${lat}&lon=${lon}&appid=${OPEN_WEATHER_API_KEY}&units=${units}&lang=pl`;
   const response = await callApi(url);
