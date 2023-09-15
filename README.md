@@ -1,8 +1,8 @@
-# Weather app
+# ![icon](public/icon.svg) Weather app
 
 Simple weather app that shows current weather and also forecast
 
-Image
+![screenshot](screenshot.png)
 
 # Tech Stack:
 
@@ -11,9 +11,8 @@ Image
 - [React Query](https://github.com/TanStack/query) - Hooks for fetching, caching and updating asynchronous data
 - [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss) - CSS Framework
 
-
-
 # Project Structure
+
 ```
 Weather app
 └── src
@@ -34,22 +33,25 @@ api.ts - file that contains open weather api info and functions
 
 utils.ts - extra functions
 
-
 # Install
 
 1. Clone the repository
+
 ```
 git clone https://github.com/Ressobe/weather-app.git
 ```
+
 2. Install all dependencies
+
 ```
 npm install
 ```
+
 3. Run the server
+
 ```
 npm run dev
 ```
-
 
 # Contributing
 
