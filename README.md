@@ -26,7 +26,9 @@ Weather app
 ```
 
 search - Everything realted to search bar
+
 status - App stage (loading, error)
+
 weather - Main componentes that shows weather
 
 api.ts - file that contains open weather api info and functions
