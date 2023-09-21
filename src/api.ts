@@ -7,7 +7,7 @@ import {
 
 export const GEO = "http://api.openweathermap.org/geo/1.0";
 export const OPEN_WEATHER_API = "https://api.openweathermap.org/data/2.5/";
-export const OPEN_WEATHER_API_KEY = process.env.OPEN_WEATHER_API_KEY;
+export const OPEN_WEATHER_API_KEY = import.meta.env.VITE_OPEN_WEATHER_API_KEY;
 export const GEO_API_URL = "https://wft-geo-db.p.rapidapi.com/v1/geo";
 export const DEFAULT_CITY = "Warszawa";
 
@@ -30,6 +30,7 @@ export async function getCurrentWeather(
   units = "metric",
   lang = "en"
 ): Promise<CurrentWeather> {
+  console.log(OPEN_WEATHER_API_KEY);
   const [lat, lon] = await getCords(city);
   const url = `${OPEN_WEATHER_API}/weather?lat=${lat}&lon=${lon}&appid=${OPEN_WEATHER_API_KEY}&units=${units}&lang=${lang}`;
   const response = await callApi(url);
